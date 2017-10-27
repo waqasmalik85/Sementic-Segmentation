@@ -7,7 +7,7 @@ import project_tests as tests
 
 
 # Check TensorFlow Version
-#assert LooseVersion(tf.__version__) >= LooseVersion('1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
+assert LooseVersion(tf.__version__) >= LooseVersion('1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
 print('TensorFlow Version: {}'.format(tf.__version__))
 
 # Check for a GPU
