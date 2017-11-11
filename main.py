@@ -206,7 +206,7 @@ def run():
 
         # TODO: Save inference data using helper.save_inference_samples
 
-        helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, image_input, epochs)
+        helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, image_input)
 
         # OPTIONAL: Apply the trained model to a video
 
