@@ -58,23 +58,23 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :param num_classes: Number of classes to classify
     :return: The Tensor for the last layer of output
     """
-    # TODO: Implement function
+    # Implement function
 
-    # 1. Pre-trained network (VGG) as encoder (input to fn)
+    # Pre-trained network (VGG) as encoder (input to fn)
 
-    # 2. 1x1 convolutions
+    # 1x1 convolutions
 
     def conv_1x1(x, num_outputs):
         kernel_size = 1
         stride = 1
         return tf.layers.conv2d(x, num_outputs, kernel_size, stride, kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
 
-    # TODO: unsure about num_outputs=num_classes
+    
     conv_out = conv_1x1(vgg_layer7_out, num_classes)
 
 
-    # 3. Transposed convolutions
-    # TODO: tune kernel, stride, weight initialisations, regularisation
+    # Transposed convolutions
+    # Weight initialisations
     # Up-sample
     deconv_1 = tf.layers.conv2d_transpose(conv_out, num_classes, 4,2, 'SAME', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
 
@@ -82,13 +82,15 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     skip_layer_1 = conv_1x1(vgg_layer4_out, num_classes)
     skip_conn_1 = tf.add(deconv_1, skip_layer_1)
 
+    # Weight initialization
     # Up-sample
     deconv_2 = tf.layers.conv2d_transpose(skip_conn_1, num_classes, 4, 2, 'SAME', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
 
     # Add skip connection to previous VGG layer
     skip_layer_2 = conv_1x1(vgg_layer3_out, num_classes)
     skip_conn_2 = tf.add(deconv_2, skip_layer_2)
-
+	
+    # Weight initialization
     # Up-sample
     deconv_3 = tf.layers.conv2d_transpose(skip_conn_2, num_classes, 16, 8, 'SAME', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
 
@@ -106,7 +108,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     :param num_classes: Number of classes to classify
     :return: Tuple of (logits, train_op, cross_entropy_loss)
     """
-    # TODO: Implement function
+    
     # Reshape predictions and labels
     logits = tf.reshape(nn_last_layer, (-1, num_classes))
     labels = tf.reshape(correct_label, (-1, num_classes))
@@ -140,10 +142,8 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param keep_prob: TF Placeholder for dropout keep probability
     :param learning_rate: TF Placeholder for learning rate
     """
-    # TODO: Implement function
-    # TODO: TypeError when feeding keep_prob & learning_rate into feed_dict:
-    # TypeError: The value of a feed cannot be a tf.Tensor object. Acceptable feed values include Python scalars, strings, lists, or numpy ndarrays.
-
+   
+    
     keep_prob_stat = 0.8
     learning_rate_stat = 1e-4
     for epoch in range(epochs):
@@ -168,7 +168,7 @@ def run():
     # Set parameters
     epochs = 20
     batch_size = 4
-    # TODO: set learning rate through params here
+    # Set learning rate through params here
 
 
     # Download pretrained vgg model
@@ -187,7 +187,7 @@ def run():
         # OPTIONAL: Augment Images for better results
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
-        # TODO: Build NN using load_vgg, layers, and optimize function
+        # Build NN using load_vgg, layers, and optimize function
         image_input, keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(sess, vgg_path)
 
         # Build Fully Convolutional Network
@@ -196,15 +196,14 @@ def run():
         correct_label = tf.placeholder(dtype=tf.float32, shape=(None, None, None, num_classes))
         learning_rate = tf.placeholder(dtype=tf.float32)
 
-        # TODO: where does logits get used?`
         logits, train_op, cross_entropy_loss = optimize(last_layer, correct_label, learning_rate, num_classes)
 
-        # TODO: Train NN using the train_nn function
+        # Train NN using the train_nn function
         sess.run(tf.global_variables_initializer())
         train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, image_input,
                  correct_label, keep_prob, learning_rate)
 
-        # TODO: Save inference data using helper.save_inference_samples
+        # Save inference data using helper.save_inference_samples
 
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, image_input)
 
